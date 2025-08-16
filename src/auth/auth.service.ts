@@ -1,0 +1,48 @@
+import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
+import { User } from './users/user.entity';
+import { JwtService } from '@nestjs/jwt';
+
+@Injectable()
+export class AuthService {
+  constructor(
+    @InjectRepository(User)
+    private usersRepo: Repository<User>,
+    private jwtService: JwtService
+  ) {}
+
+  async register(email: string, password: string, name: string) {
+    const existing = await this.usersRepo.findOne({ where: { email } });
+    if (existing) throw new ConflictException('El email ya está registrado');
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = this.usersRepo.create({
+      email,
+      password: hashedPassword,
+      name,
+    });
+
+    return this.usersRepo.save(user);
+  }
+
+  async validateUser(email: string, password: string) {
+    const user = await this.usersRepo.findOne({ where: { email } });
+    if (!user) return null;
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) return null;
+
+    return user;
+  }
+
+  async login(email: string, password: string) {
+    const user = await this.validateUser(email, password);
+    if (!user) throw new UnauthorizedException('Invalid credentials');
+
+    const payload = { sub: user.id, email: user.email };
+    return { access_token: this.jwtService.sign(payload) };
+  }
+}
