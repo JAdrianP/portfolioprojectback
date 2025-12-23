@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  mysql-db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: frontstartdb
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - backend-network
+
+  backend:
+    build:
+      context: ./backend/backend    # 👈 carpeta del Dockerfile
+      dockerfile: Dockerfile
+    image: backend
+    depends_on:
+      - mysql-db
+    environment:
+      DB_HOST: mysql-db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: frontstartdb
+    ports:
+      - "3000:3000"
+    networks:
+      - backend-network
+
+volumes:
+  mysql-data:
+
+networks:
+  backend-network:
+    driver: bridge
