@@ -5,7 +5,7 @@ set -e  # Sale si algún comando falla
 # VARIABLES
 # -----------------------------
 REPO_DIR=/home/infrastructure/backend/backend
-COMPOSE_FILE=/home/infrastructure/backend/docker-compose.yml
+COMPOSE_FILE=/home/infrastructure/backend/backend/docker-compose.yml
 BACKEND_SERVICE_NAME=backend_backend_1
 MYSQL_SERVICE_NAME=backend_mysql-db_1
 
