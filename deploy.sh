@@ -31,8 +31,9 @@ echo "🛑 3. Limpiando contenedores antiguos del backend y MySQL (si están det
 stop_and_rm $BACKEND_SERVICE_NAME
 stop_and_rm $MYSQL_SERVICE_NAME
 
-echo "🧹 4. Limpiando contenedores huérfanos"
+echo "🧹 4. Limpiando contenedores e imagenes huérfanas"
 docker container prune -f
+docker image prune -a
 
 echo "🔧 5. Reconstruyendo y levantando servicios"
 docker-compose -f $COMPOSE_FILE up -d --build --force-recreate
