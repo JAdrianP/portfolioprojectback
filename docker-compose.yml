@@ -16,7 +16,7 @@ services:
 
   backend:
     build:
-      context: ./backend/backend    # 👈 carpeta del Dockerfile
+      context: .    # 👈 carpeta del Dockerfile
       dockerfile: Dockerfile
     image: backend
     depends_on:
